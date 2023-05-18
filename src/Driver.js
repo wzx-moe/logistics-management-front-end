@@ -12,18 +12,26 @@ const Driver = () => {
     const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8080';
 
     useEffect(() => {
+        // 从后端获取客服信息和用户评价
+        async function fetchData() {
+            try {
+                axios.get(`${apiUrl}/driver`).then((response) => {
+                    setDriver(response.data);
+                });
 
-        axios.get(`${apiUrl}/driver`).then((response) => {
-            setDriver(response.data);
-        });
+                axios.get(`${apiUrl}/pendingOrders`).then((response) => {
+                    setPendingOrders(response.data);
+                });
 
-        axios.get(`${apiUrl}/pendingOrders`).then((response) => {
-            setPendingOrders(response.data);
-        });
+                axios.get(`${apiUrl}/completedOrders`).then((response) => {
+                    setCompletedOrders(response.data);
+                });
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
 
-        axios.get(`${apiUrl}/completedOrders`).then((response) => {
-            setCompletedOrders(response.data);
-        });
+        fetchData();
     }, [apiUrl]);
 
     const handleAcceptOrder = (orderId) => {

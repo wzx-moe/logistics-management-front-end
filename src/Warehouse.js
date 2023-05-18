@@ -20,19 +20,27 @@ const Warehouse = () => {
     }
 
     useEffect(() => {
-        // 记得替换为正确的API URL
-        axios.get(`${apiUrl}/api/warehouse-manager-info`)
-            .then(response => {
-                setWarehouseManager(response.data);
-            });
-        axios.get(`${apiUrl}/api/delivered-parcels`)
-            .then(response => {
-                setDeliveredParcels(response.data);
-            });
-        axios.get(`${apiUrl}/api/pending-parcels`)
-            .then(response => {
-                setPendingParcels(response.data);
-            });
+        // 从后端获取客服信息和用户评价
+        async function fetchData() {
+            try {
+                axios.get(`${apiUrl}/api/warehouse-manager-info`)
+                    .then(response => {
+                        setWarehouseManager(response.data);
+                    });
+                axios.get(`${apiUrl}/api/delivered-parcels`)
+                    .then(response => {
+                        setDeliveredParcels(response.data);
+                    });
+                axios.get(`${apiUrl}/api/pending-parcels`)
+                    .then(response => {
+                        setPendingParcels(response.data);
+                    });
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+
+        fetchData();
     }, [apiUrl]);
 
     async function assignOrder(parcelId, driverId) {

@@ -7,6 +7,7 @@ import Driver from "./Driver";
 import Warehouse from "./Warehouse";
 import CustomerService from "./CustomerService";
 import Chat from "./Chat";
+import Manager from "./Manager";
 
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
                 <Route path="/driver" element={<Driver/>}/>
                 <Route path="/warehouse" element={<Warehouse/>}/>
                 <Route path="/customer-service" element={<CustomerService/>}/>
+                <Route path="/manager" element={<Manager/>}/>
                 <Route path="/chat" element={<Chat/>}/>
                 <Route path="/logout" element={<Logout/>}/>
             </Routes>
