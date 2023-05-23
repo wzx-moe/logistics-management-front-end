@@ -16,11 +16,11 @@ function App() {
         <BrowserRouter>
             <Routes>
                 <Route path="/" element={<Login/>}/>
-                <Route path="/customer" element={<Customer/>}/>
-                <Route path="/driver" element={<Driver/>}/>
-                <Route path="/warehouse" element={<Warehouse/>}/>
-                <Route path="/customer-service" element={<CustomerService/>}/>
-                <Route path="/manager" element={<Manager/>}/>
+                <Route path="/customer/:name" element={<Customer/>}/>
+                <Route path="/driver/:name" element={<Driver/>}/>
+                <Route path="/warehouse/:name" element={<Warehouse/>}/>
+                <Route path="/customer-service/:name" element={<CustomerService/>}/>
+                <Route path="/manager/:name" element={<Manager/>}/>
                 <Route path="/chat" element={<Chat/>}/>
                 <Route path="/logout" element={<Logout/>}/>
             </Routes>

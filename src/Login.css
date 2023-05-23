@@ -1,0 +1,44 @@
+.centered-content {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    background-color: #fff;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+.FormGroup {
+    margin-bottom: 20px;
+}
+
+.Label {
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.Input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.Button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.Button:hover {
+    background-color: #0056b3;
+}

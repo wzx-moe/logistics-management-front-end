@@ -1,8 +1,9 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import axios from 'axios';
-import {useNavigate} from 'react-router-dom';
-import {Button, Form, FormGroup, Input, Label, Nav, NavItem, NavLink, TabContent, Table, TabPane} from 'reactstrap';
+import {useNavigate, useParams} from 'react-router-dom';
+import {Button, Form, FormGroup, Input, Label, Nav, NavItem, NavLink, TabContent, TabPane} from 'reactstrap';
 import classnames from 'classnames';
+import {useSortBy, useTable} from "react-table";
 
 const Warehouse = () => {
     const [activeTab, setActiveTab] = useState('1');
@@ -10,10 +11,15 @@ const Warehouse = () => {
     const [deliveredParcels, setDeliveredParcels] = useState([]);
     const [pendingParcels, setPendingParcels] = useState([]);
     const [driverInfo, setDriverInfo] = useState({});
-    const [form, setForm] = useState({parcelId: '', driverId: ''});
+    const [drivers, setDrivers] = useState([]);
+    const [form, setForm] = useState({parcel: pendingParcels[0] || null, driverId: ''});
     const [isSubmitting, setSubmitting] = useState(false);
+    const [modified, setModified] = useState(0)
     const navigate = useNavigate();
     const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8080';
+    const {name} = useParams();
+    axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('token');
+
 
     const toggle = tab => {
         if (activeTab !== tab) setActiveTab(tab);
@@ -23,15 +29,19 @@ const Warehouse = () => {
         // 从后端获取客服信息和用户评价
         async function fetchData() {
             try {
-                axios.get(`${apiUrl}/api/warehouse-manager-info`)
+                axios.get(`${apiUrl}/user/getName/${name}`)
                     .then(response => {
                         setWarehouseManager(response.data);
                     });
-                axios.get(`${apiUrl}/api/delivered-parcels`)
+                axios.get(`${apiUrl}/user/getDriver`)
+                    .then(response => {
+                        setDrivers(response.data);
+                    });
+                axios.get(`${apiUrl}/order/getCompleted`)
                     .then(response => {
                         setDeliveredParcels(response.data);
                     });
-                axios.get(`${apiUrl}/api/pending-parcels`)
+                axios.get(`${apiUrl}/order/getPending`)
                     .then(response => {
                         setPendingParcels(response.data);
                     });
@@ -41,35 +51,85 @@ const Warehouse = () => {
         }
 
         fetchData();
-    }, [apiUrl]);
-
-    async function assignOrder(parcelId, driverId) {
-        try {
-            const response = await axios.post(`${apiUrl}/api/orders/assign`, {
-                parcelId,
-                driverId
-            });
-
-            return response.data;
-        } catch (error) {
-            console.error(`Error: ${error}`);
-        }
-    }
+    }, [apiUrl, name, modified]);
 
 
     const handleDriverSearch = (driverId) => {
-        axios.get(`${apiUrl}/api/driver-info/${driverId}`)
+        axios.get(`${apiUrl}/user/getOne/${driverId}`)
             .then(response => {
                 setDriverInfo(response.data);
             });
     }
 
+    const deliveredColumns = useMemo(
+        () => [
+            {Header: '快递ID', accessor: 'orderID'},
+            {Header: '发货时间', accessor: 'orderDate'},
+            {Header: '负责司机ID', accessor: 'driverID'},
+            {Header: '状态', accessor: 'status'},
+        ],
+        []
+    );
+
+    const pendingColumns = useMemo(
+        () => [
+            {Header: '快递ID', accessor: 'orderID'},
+            {Header: '发货时间', accessor: 'orderDate'},
+            {Header: '发货地', accessor: 'pickupAddress'},
+            {Header: '目的地', accessor: 'deliveryAddress'},
+        ],
+        []
+    );
+
+    const {
+        getTableProps: getDeliveredTableProps,
+        getTableBodyProps: getDeliveredTableBodyProps,
+        headerGroups: deliveredHeaderGroups,
+        rows: deliveredRows,
+        prepareRow: prepareDeliveredRow,
+    } = useTable({columns: deliveredColumns, data: deliveredParcels}, useSortBy);
+
+    const {
+        getTableProps: getPendingTableProps,
+        getTableBodyProps: getPendingTableBodyProps,
+        headerGroups: pendingHeaderGroups,
+        rows: pendingRows,
+        prepareRow: preparePendingRow,
+    } = useTable({columns: pendingColumns, data: pendingParcels}, useSortBy);
+
+    // 提交表单的函数
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setSubmitting(true);
+
+        // 构建更新后的parcel对象
+        const updatedParcel = { ...form.parcel, driverID: form.driverId };
+
+        try {
+            // 提交更新后的parcel对象
+            const response = await axios.post(`${apiUrl}/order/update/${updatedParcel.orderID}`, updatedParcel);
+
+            // 处理响应，更新状态等
+            if (response.status === 200) {
+                // 更新成功，可以清除表单或进行其他操作
+                setForm({
+                    parcel: "",
+                    driverId: "",
+                });
+                setSubmitting(false);
+                setModified(modified + 1);
+            }
+        } catch (err) {
+            console.error(err);
+            setSubmitting(false);
+        }
+    };
 
     return (
         <div>
             <h1>仓库管理员主页</h1>
             <p>仓库管理员ID：{warehouseManager.id}</p>
-            <p>昵称：{warehouseManager.nickname}</p>
+            <p>昵称：{warehouseManager.name}</p>
 
             <Nav tabs>
                 <NavItem>
@@ -79,7 +139,7 @@ const Warehouse = () => {
                             toggle('1');
                         }}
                     >
-                        已发货快递
+                        已分配快递
                     </NavLink>
                 </NavItem>
                 <NavItem>
@@ -89,7 +149,7 @@ const Warehouse = () => {
                             toggle('2');
                         }}
                     >
-                        未发货快递
+                        未分配快递
                     </NavLink>
                 </NavItem>
                 <NavItem>
@@ -116,83 +176,88 @@ const Warehouse = () => {
 
             <TabContent activeTab={activeTab}>
                 <TabPane tabId="1">
-                    <Table>
+                    <table {...getDeliveredTableProps()} style={{margin: 'auto', width: '80%'}}>
                         <thead>
-                        <tr>
-                            <th>快递ID</th>
-                            <th>发货时间</th>
-                            <th>负责司机ID</th>
-                            <th>是否到达</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {deliveredParcels.map(parcel => (
-                            <tr key={parcel.id}>
-                                <td>{parcel.id}</td>
-                                <td>{parcel.deliveryTime}</td>
-                                <td>{parcel.driverId}</td>
-                                <td>{parcel.arrived ? '是' : '否'}</td>
+                        {deliveredHeaderGroups.map((headerGroup) => (
+                            <tr {...headerGroup.getHeaderGroupProps()}>
+                                {headerGroup.headers.map((column) => (
+                                    <th {...column.getHeaderProps(column.getSortByToggleProps())}>
+                                        {column.render('Header')}
+                                    </th>
+                                ))}
                             </tr>
                         ))}
+                        </thead>
+                        <tbody {...getDeliveredTableBodyProps()}>
+                        {deliveredRows.map((row) => {
+                            prepareDeliveredRow(row);
+                            return (
+                                <tr {...row.getRowProps()}>
+                                    {row.cells.map((cell) => (
+                                        <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                                    ))}
+                                </tr>
+                            );
+                        })}
                         </tbody>
-                    </Table>
+                    </table>
                 </TabPane>
                 <TabPane tabId="2">
-                    <Table>
+                    <table {...getPendingTableProps()} style={{margin: 'auto', width: '80%'}}>
                         <thead>
-                        <tr>
-                            <th>快递ID</th>
-                            <th>发货时间</th>
-                            <th>负责司机ID</th>
-                            <th>目的地</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {pendingParcels.map(parcel => (
-                            <tr key={parcel.id}>
-                                <td>{parcel.id}</td>
-                                <td>{parcel.deliveryTime}</td>
-                                <td>{parcel.driverId}</td>
-                                <td>{parcel.destination}</td>
+                        {pendingHeaderGroups.map((headerGroup) => (
+                            <tr {...headerGroup.getHeaderGroupProps()}>
+                                {headerGroup.headers.map((column) => (
+                                    <th {...column.getHeaderProps(column.getSortByToggleProps())}>
+                                        {column.render('Header')}
+                                    </th>
+                                ))}
                             </tr>
                         ))}
+                        </thead>
+                        <tbody {...getPendingTableBodyProps()}>
+                        {pendingRows.map((row) => {
+                            preparePendingRow(row);
+                            return (
+                                <tr {...row.getRowProps()}>
+                                    {row.cells.map((cell) => (
+                                        <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                                    ))}
+                                </tr>
+                            );
+                        })}
                         </tbody>
-                    </Table>
+                    </table>
                 </TabPane>
                 <TabPane tabId="3">
-                    <Form onSubmit={e => {
-                        e.preventDefault();
-                        setSubmitting(true);
-                        assignOrder(form.parcelId, form.driverId)
-                            .then(() => {
-                                setForm({ parcelId: '', driverId: '' });
-                                // 这里也可以添加一些额外的逻辑，比如刷新订单列表
-                            })
-                            .catch(err => {
-                                console.error(err);
-                                // 这里可以添加一些错误处理逻辑，比如显示错误消息
-                            })
-                            .finally(() => {
-                                setSubmitting(false);
-                            });
-                    }}>
+                    <Form onSubmit={handleSubmit}>
                         <FormGroup>
                             <Label for="parcelId">快递ID</Label>
-                            <Input type="text" name="parcelId" id="parcelId" value={form.parcelId}
-                                   onChange={e => setForm({...form, parcelId: e.target.value})}/>
+                            <Input type="select" name="parcelId" id="parcelId"
+                                   value={form.parcel && form.parcel.orderID}
+                                   onChange={e => {
+                                       const selectedParcel = pendingParcels.find(parcel => parcel.orderID === e.target.value);
+                                       setForm({...form, parcel: selectedParcel});
+                                   }}>
+                                <option value="">请选择一个快递</option>
+                                {pendingParcels.map(parcel => (
+                                    <option key={parcel.orderID} value={parcel.orderID}>
+                                        {parcel.orderID} - {parcel.pickupAddress} 到 {parcel.deliveryAddress} - {parcel.orderDate} 到 {parcel.deliveryDate}
+                                    </option>
+                                ))}
+                            </Input>
                         </FormGroup>
                         <FormGroup>
                             <Label for="driverId">司机ID</Label>
-                            <Input type="text" name="driverId" id="driverId" value={form.driverId}
-                                   onChange={e => setForm({...form, driverId: e.target.value})}/>
-                        </FormGroup>
-                        <FormGroup>
-                            <Label for="parcelId">快递ID</Label>
-                            <Input type="text" name="parcelId" id="parcelId"/>
-                        </FormGroup>
-                        <FormGroup>
-                            <Label for="driverId">司机ID</Label>
-                            <Input type="text" name="driverId" id="driverId"/>
+                            <Input type="select" name="driverId" id="driverId" value={form.driverId}
+                                   onChange={e => setForm({...form, driverId: e.target.value})}>
+                                <option value="">请选择一个司机</option>
+                                {drivers.map(driver => (
+                                    <option value={driver.id}>
+                                        {driver.id} - {driver.name} - 状态: {driver.status || '未知'}
+                                    </option>
+                                ))}
+                            </Input>
                         </FormGroup>
                         <Button type="submit" color="primary" disabled={isSubmitting}>提交</Button>
                     </Form>
@@ -210,11 +275,11 @@ const Warehouse = () => {
                     </Form>
                     {driverInfo && (
                         <div>
-                            <p>司机信息：{driverInfo.info}</p>
-                            <p>家庭住址：{driverInfo.address}</p>
-                            <p>接单数量：{driverInfo.orderCount}</p>
-                            <p>绩效评价：{driverInfo.performance}</p>
-                            <p>是否空闲：{driverInfo.isFree ? '是' : '否'}</p>
+                            <p>司机名称：{driverInfo.name}</p>
+                            <p>家庭住址：{driverInfo.backup}</p>
+                            <p>工作时间：{new Date().getDate() - new Date(driverInfo.register).getDate() + 1} 天</p>
+                            <p>绩效评价：{driverInfo.special}</p>
+                            <p>是否空闲：{driverInfo.status || '未知'}</p>
                         </div>
                     )}
                 </TabPane>

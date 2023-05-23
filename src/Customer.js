@@ -1,3 +1,4 @@
+import "./Customer.css"
 import React, {useEffect, useMemo, useState} from 'react';
 import axios from 'axios';
 import {useSortBy, useTable} from 'react-table';
@@ -16,6 +17,7 @@ import {
     TabPane
 } from "reactstrap";
 import classnames from "classnames";
+import {useNavigate, useParams} from "react-router-dom";
 
 const HomePage = () => {
     const [activeTab, setActiveTab] = useState('1');
@@ -23,6 +25,10 @@ const HomePage = () => {
     const [myPackages, setMyPackages] = useState([]);
     const [receivedPackages, setReceivedPackages] = useState([]);
     const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8080';
+    const navigate = useNavigate();
+    const {name} = useParams();
+    axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('token');
+
     const handleSubmit = async (event) => {
         event.preventDefault();
 
@@ -32,8 +38,8 @@ const HomePage = () => {
 
         try {
             // 发送POST请求
-            const response = await axios.post(`${apiUrl}/api/endpoint`, sendData); // 替换为你的API端点
-            if (response.status === 200) {
+            const response = await axios.post(`${apiUrl}/order/add`, sendData); // 替换为你的API端点
+            if (response.status === 201) {
                 // 处理成功的情况
                 alert('寄件请求已成功提交');
             } else {
@@ -53,35 +59,37 @@ const HomePage = () => {
     useEffect(() => {
         const fetchUserInfo = async () => {
             try {
-                const response = await axios.get(`${apiUrl}/api/user_info`);
+                const response = await axios.get(`${apiUrl}/user/getName/${name}`);
                 setUserInfo(response.data);
             } catch (err) {
                 console.error(err);
             }
         };
-
-        const fetchPackages = async () => {
-            try {
-                const sentPackagesResponse = await axios.get(`${apiUrl}/api/my_packages`);
-                setMyPackages(sentPackagesResponse.data);
-
-                const receivedPackagesResponse = await axios.get(`${apiUrl}/api/received_packages`);
-                setReceivedPackages(receivedPackagesResponse.data);
-            } catch (err) {
-                console.error(err);
-            }
-        };
-
-
         fetchUserInfo();
-        fetchPackages();
-    }, [apiUrl]);
+    }, [apiUrl, name]);
+
+    useEffect(() => {
+        if (userInfo != null) {
+            const fetchPackages = async () => {
+                try {
+                    const sentPackagesResponse = await axios.get(`${apiUrl}/order/getSenderName/${userInfo.name}`);
+                    setMyPackages(sentPackagesResponse.data);
+
+                    const receivedPackagesResponse = await axios.get(`${apiUrl}/order/getReceiverName/${userInfo.name}`);
+                    setReceivedPackages(receivedPackagesResponse.data);
+                } catch (err) {
+                    console.error(err);
+                }
+            };
+            fetchPackages();
+        }
+    }, [apiUrl, userInfo]);
 
     const columns = useMemo(
         () => [
-            {Header: '运单号', accessor: 'packageID'},
-            {Header: '寄件人地址', accessor: 'senderAddress'},
-            {Header: '收件人地址', accessor: 'receiverAddress'},
+            {Header: '运单号', accessor: 'orderID'},
+            {Header: '寄件人地址', accessor: 'pickupAddress'},
+            {Header: '收件人地址', accessor: 'deliveryAddress'},
             {Header: '状态', accessor: 'status'},
         ],
         []
@@ -100,11 +108,11 @@ const HomePage = () => {
     } = useTable({columns, data: receivedPackages}, useSortBy);
 
     return (
-        <div>
+        <div className="centered-content left-align">
             {userInfo && (
                 <div>
-                    <h2>用户名：{userInfo.username}</h2>
-                    <h3>使用软件的第 {userInfo.daysUsing} 天</h3>
+                    <h2>用户名：{userInfo.name}</h2>
+                    <h3>使用软件的第 {new Date().getDate() - new Date(userInfo.register).getDate() + 1} 天</h3>
                     <h3>id：{userInfo.id}</h3>
                 </div>
             )}
@@ -170,7 +178,7 @@ const HomePage = () => {
                         {sentRows.map((row) => {
                             prepareRow(row);
                             return (
-                                <tr {...row.getRowProps()}>
+                                <tr onClick={() => navigate(`/package-detail`)} {...row.getRowProps()}>
                                     {row.cells.map((cell) => (
                                         <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
                                     ))}
@@ -197,7 +205,7 @@ const HomePage = () => {
                         {receivedRows.map((row) => {
                             prepareRow(row);
                             return (
-                                <tr {...row.getRowProps()}>
+                                <tr onClick={() => navigate(`/package-detail`)} {...row.getRowProps()}>
                                     {row.cells.map((cell) => (
                                         <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
                                     ))}
@@ -218,7 +226,7 @@ const HomePage = () => {
                                 </FormGroup>
                                 <FormGroup>
                                     <Label for="senderAddress">寄件人有效地址</Label>
-                                    <Input type="text" name="senderAddress" id="senderAddress"/>
+                                    <Input type="text" name="pickupAddress" id="senderAddress"/>
                                 </FormGroup>
                                 <FormGroup>
                                     <Label for="senderPhone">寄件人手机号码</Label>
@@ -230,7 +238,7 @@ const HomePage = () => {
                                 </FormGroup>
                                 <FormGroup>
                                     <Label for="receiverAddress">收件人有效地址</Label>
-                                    <Input type="text" name="receiverAddress" id="receiverAddress"/>
+                                    <Input type="text" name="deliveryAddress" id="receiverAddress"/>
                                 </FormGroup>
                                 <FormGroup>
                                     <Label for="receiverPhone">收件人手机号码</Label>
@@ -252,12 +260,12 @@ const HomePage = () => {
                                     </FormGroup>
                                 </FormGroup>
                                 <FormGroup>
-                                    <Label for="deliveryTime">送达时间</Label>
-                                    <Input type="text" name="deliveryTime" id="deliveryTime"/>
+                                    <Label for="pickupTime">取件时间</Label>
+                                    <Input type="text" name="orderDate" id="pickupTime"/>
                                 </FormGroup>
                                 <FormGroup>
-                                    <Label for="pickupTime">取件时间</Label>
-                                    <Input type="text" name="pickupTime" id="pickupTime"/>
+                                    <Label for="deliveryTime">送达时间</Label>
+                                    <Input type="text" name="deliveryDate" id="deliveryTime"/>
                                 </FormGroup>
                                 <FormGroup tag="fieldset">
                                     <legend>运费险</legend>

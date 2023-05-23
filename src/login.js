@@ -1,10 +1,11 @@
+import "./Login.css"
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Button, Form, FormGroup, Label, Input } from 'reactstrap';
 import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
-    const [account, setAccount] = useState('');
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [smsCode, setSmsCode] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
@@ -14,31 +15,31 @@ const Login = () => {
 
     const handleLogin = async (role) => {
         try {
-            const response = await axios.post(`${apiUrl}/login`, {
-                account,
+            const response = await axios.post(`${apiUrl}/api/login`, {
+                name: username,
                 password,
                 smsCode,
                 phoneNumber,
-                role,
             });
 
             if (response.status === 200) {
+                localStorage.setItem('token', response.data)
                 // 登录成功，根据角色跳转到对应主页面
                 switch(role) {
                     case 'customer':
-                        navigate('/customer');
+                        navigate(`/customer/${username}`);
                         break;
                     case 'driver':
-                        navigate('/driver');
+                        navigate(`/driver/${username}`);
                         break;
                     case 'warehouse':
-                        navigate('/warehouse');
+                        navigate(`/warehouse/${username}`);
                         break;
                     case 'customer-service':
-                        navigate('/customer-service');
+                        navigate(`/customer-servic/${username}`);
                         break;
                     case 'manager':
-                        navigate('/manager');
+                        navigate(`/manager/${username}`);
                         break;
                     default:
                         // 无效角色处理
@@ -46,19 +47,21 @@ const Login = () => {
                 }
             } else {
                 // 显示错误信息
+                alert(response.data)
             }
         } catch (error) {
             // 处理错误，例如显示错误信息
+            //  alert(error)
         }
     };
 
     return (
-        <div>
+        <div className="centered-content">
             <h1>CoCo物流管理系统</h1>
             <Form>
                 <FormGroup>
                     <Label for="account">账号：</Label>
-                    <Input type="text" id="account" onChange={e => setAccount(e.target.value)} />
+                    <Input type="text" id="account" onChange={e => setUsername(e.target.value)} />
                 </FormGroup>
                 <FormGroup>
                     <Label for="password">密码：</Label>

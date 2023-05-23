@@ -15,6 +15,7 @@ import {
 } from 'reactstrap';
 import axios from 'axios';
 import classnames from 'classnames';
+import {useParams} from "react-router-dom";
 
 const Manager = () => {
     const [activeTab, setActiveTab] = useState('1');
@@ -24,6 +25,9 @@ const Manager = () => {
     const [supportData, setSupportData] = useState([]);
     const [driverData, setDriverData] = useState([]);
     const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8080';
+    const {name} = useParams();
+    axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('token');
+
 
     useEffect(() => {
         // 从后端获取信息
@@ -59,8 +63,8 @@ const Manager = () => {
                 <Col sm="12" md={{size: 6, offset: 3}}>
                     <Card>
                         <CardBody>
-                            <CardTitle tag="h5">Manager Information</CardTitle>
-                            <CardText>Name: {managerData.name}</CardText>
+                            <CardTitle tag="h5">经理信息</CardTitle>
+                            <CardText>姓名: {managerData.name}</CardText>
                         </CardBody>
                     </Card>
 
@@ -69,21 +73,21 @@ const Manager = () => {
                             <NavLink className={classnames({active: activeTab === '1'})} onClick={() => {
                                 toggle('1');
                             }}>
-                                Warehouse Manager
+                                仓库管理员
                             </NavLink>
                         </NavItem>
                         <NavItem>
                             <NavLink className={classnames({active: activeTab === '2'})} onClick={() => {
                                 toggle('2');
                             }}>
-                                Support
+                                客服
                             </NavLink>
                         </NavItem>
                         <NavItem>
                             <NavLink className={classnames({active: activeTab === '3'})} onClick={() => {
                                 toggle('3');
                             }}>
-                                Driver
+                                司机
                             </NavLink>
                         </NavItem>
                     </Nav>
@@ -92,12 +96,12 @@ const Manager = () => {
                             {warehouseData.map((item, index) => (
                                 <Card key={index}>
                                     <CardBody>
-                                        <CardText>Name: {item.name}</CardText>
-                                        <CardText>Contact Number: {item.contact}</CardText>
-                                        <CardText>Email: {item.email}</CardText>
-                                        <CardText>Managed Warehouse: {item.managed_warehouse}</CardText>
-                                        <CardText>Working Hours: {item.working_hours}</CardText>
-                                        <CardText>Work Attitude: {item.attitude}</CardText>
+                                        <CardText>姓名: {item.name}</CardText>
+                                        <CardText>联系电话: {item.contact}</CardText>
+                                        <CardText>邮箱: {item.email}</CardText>
+                                        <CardText>管理范围: {item.managed_warehouse}</CardText>
+                                        <CardText>工作时长: {item.working_hours}</CardText>
+                                        <CardText>工作态度: {item.attitude}</CardText>
                                     </CardBody>
                                 </Card>
                             ))}
@@ -106,12 +110,12 @@ const Manager = () => {
                             {supportData.map((item, index) => (
                                 <Card key={index}>
                                     <CardBody>
-                                        <CardText>Name: {item.name}</CardText>
-                                        <CardText>Contact Number: {item.contact}</CardText>
-                                        <CardText>Email: {item.email}</CardText>
-                                        <CardText>Received Complaints: {item.complaints}</CardText>
-                                        <CardText>Working Hours: {item.working_hours}</CardText>
-                                        <CardText>Work Attitude: {item.attitude}</CardText>
+                                        <CardText>姓名: {item.name}</CardText>
+                                        <CardText>联系电话: {item.contact}</CardText>
+                                        <CardText>邮箱: {item.email}</CardText>
+                                        <CardText>收到投诉: {item.complaints}</CardText>
+                                        <CardText>工作时长: {item.working_hours}</CardText>
+                                        <CardText>工作态度: {item.attitude}</CardText>
                                     </CardBody>
                                 </Card>
                             ))}
@@ -120,12 +124,11 @@ const Manager = () => {
                             {driverData.map((item, index) => (
                                 <Card key={index}>
                                     <CardBody>
-                                        <CardText>Name: {item.name}</CardText>
-                                        <CardText>Contact Number: {item.contact}</CardText>
-                                        <CardText>Email: {item.email}</CardText>
-                                        <CardText>Driving Years: {item.driving_years}</CardText>
-                                        <CardText>Working Hours: {item.working_hours}</CardText>
-                                        <CardText>Work Attitude: {item.attitude}</CardText>
+                                        <CardText>姓名: {item.name}</CardText>
+                                        <CardText>联系电话: {item.contact}</CardText>
+                                        <CardText>邮箱: {item.email}</CardText>
+                                        <CardText>工作时长: {item.working_hours}</CardText>
+                                        <CardText>工作态度: {item.attitude}</CardText>
                                     </CardBody>
                                 </Card>
                             ))}

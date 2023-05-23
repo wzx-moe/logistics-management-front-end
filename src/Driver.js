@@ -1,104 +1,214 @@
-import React, {useEffect, useState} from 'react';
+import "./Driver.css"
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import axios from 'axios';
-import {useNavigate} from 'react-router-dom';
-import {Button, Table} from 'reactstrap';
+import {useNavigate, useParams} from 'react-router-dom';
+import {Button, Nav, NavItem, NavLink, TabContent, TabPane} from 'reactstrap';
+import {useSortBy, useTable} from "react-table";
+import classnames from "classnames";
 
 const Driver = () => {
     const [driver, setDriver] = useState({});
     const [pendingOrders, setPendingOrders] = useState([]);
     const [completedOrders, setCompletedOrders] = useState([]);
-    const [showPendingOrders, setShowPendingOrders] = useState(true);
+    const [activeTab, setActiveTab] = useState('1');
+    const [modified, setModified] = useState(0)
     const navigate = useNavigate();
     const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8080';
+    const {name} = useParams();
+    axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('token');
+
 
     useEffect(() => {
         // 从后端获取客服信息和用户评价
-        async function fetchData() {
+        async function fetchUserInfo() {
             try {
-                axios.get(`${apiUrl}/driver`).then((response) => {
+                axios.get(`${apiUrl}/user/getName/${name}`).then((response) => {
                     setDriver(response.data);
                 });
 
-                axios.get(`${apiUrl}/pendingOrders`).then((response) => {
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+
+        fetchUserInfo();
+    }, [apiUrl, name]);
+
+    useEffect(() => {
+        async function fetchData() {
+            try {
+                axios.get(`${apiUrl}/order/getDriverIDPending/${driver.id}`).then((response) => {
                     setPendingOrders(response.data);
                 });
 
-                axios.get(`${apiUrl}/completedOrders`).then((response) => {
+                axios.get(`${apiUrl}/order/getDriverIDCompleted/${driver.id}`).then((response) => {
                     setCompletedOrders(response.data);
                 });
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
         }
-
         fetchData();
-    }, [apiUrl]);
+    }, [apiUrl, driver, modified]);
 
-    const handleAcceptOrder = (orderId) => {
+    const handleAcceptOrder = useCallback((order) => {
+        order.status = "待取件";
         // 调用接受订单的 API
-        axios.post(`${apiUrl}/acceptOrder`, {orderId}).then(() => {
+        axios.post(`${apiUrl}/order/update/${order.orderID}`,
+            order).then(() => {
             // 更新订单列表
-            setPendingOrders(pendingOrders.filter((order) => order.id !== orderId));
+            setModified(modified + 1);
         });
-    };
+    }, [apiUrl, modified]);
 
-    const handleRejectOrder = (orderId) => {
+    const handleRejectOrder = useCallback((order) =>  {
+        order.driverID = null;
+        order.driverName = null;
         // 调用拒绝订单的 API
-        axios.post(`${apiUrl}/rejectOrder`, {orderId}).then(() => {
+        axios.post(`${apiUrl}/order/update/${order.orderID}`,
+            order).then(() => {
             // 更新订单列表
-            setPendingOrders(pendingOrders.filter((order) => order.id !== orderId));
+            setModified(modified + 1);
         });
-    };
+    }, [apiUrl, modified]);
+
+    const pendingColumns = useMemo(
+        () => [
+            {Header: '运单号', accessor: 'orderID'},
+            {Header: '寄件人名字', accessor: 'senderName'},
+            {Header: '取货日期', accessor: 'orderDate'},
+            {Header: '送货日期', accessor: 'deliveryDate'},
+            {Header: '地址', accessor: order => `${order.pickupAddress} 到 ${order.deliveryAddress}`},
+            {
+                Header: '操作',
+                accessor: 'actions',
+                Cell: ({row: {original}}) => (
+                    <>
+                        <Button variant="success" onClick={() => handleAcceptOrder(original)}>
+                            接受
+                        </Button>
+                        <Button variant="danger" onClick={() => handleRejectOrder(original)}>
+                            拒绝
+                        </Button>
+                    </>
+                ),
+            },
+        ],
+        [handleAcceptOrder, handleRejectOrder]
+    );
+
+    const completedColumns = useMemo(
+        () => [
+            {Header: '运单号', accessor: 'orderID'},
+            {Header: '寄件人名字', accessor: 'senderName'},
+            {Header: '取货日期', accessor: 'orderDate'},
+            {Header: '送货日期', accessor: 'deliveryDate'},
+            {Header: '地址', accessor: order => `${order.pickupAddress} 到 ${order.deliveryAddress}`},
+            {Header: '状态', accessor: 'status'},
+        ],
+        []
+    );
+
+    const {
+        getTableProps: getPendingTableProps,
+        getTableBodyProps: getPendingTableBodyProps,
+        headerGroups: pendingHeaderGroups,
+        rows: pendingRows,
+        prepareRow: preparePendingRow,
+    } = useTable({columns: pendingColumns, data: pendingOrders}, useSortBy);
+
+    const {
+        getTableProps: getCompletedTableProps,
+        getTableBodyProps: getCompletedTableBodyProps,
+        headerGroups: completedHeaderGroups,
+        rows: completedRows,
+        prepareRow: prepareCompletedRow,
+    } = useTable({columns: completedColumns, data: completedOrders}, useSortBy);
+
 
     return (
-        <div>
+        <div className="centered-content left-align">
             <h1>司机主页面</h1>
             <p>司机ID：{driver.id}</p>
             <p>身份码：{driver.identityCode}</p>
-            <Button variant="primary" onClick={() => setShowPendingOrders(true)}>
-                待处理订单
-            </Button>
-            <Button variant="secondary" onClick={() => setShowPendingOrders(false)}>
-                历史订单
-            </Button>
-            {showPendingOrders ? (
+            <Nav tabs>
+                <NavItem>
+                    <NavLink
+                        className={classnames({active: activeTab === '1'})}
+                        onClick={() => setActiveTab('1')}
+                    >
+                        待处理订单
+                    </NavLink>
+                </NavItem>
+                <NavItem>
+                    <NavLink
+                        className={classnames({active: activeTab === '2'})}
+                        onClick={() => setActiveTab('2')}
+                    >
+                        历史订单
+                    </NavLink>
+                </NavItem>
+            </Nav>
+            <TabContent activeTab={activeTab}>
+                <TabPane tabId="1">
                 <div>
-                    <h2>待处理订单</h2>
-                    <Table striped bordered hover>
-                        {pendingOrders.map((order) => (
-                            <tr key={order.id}>
-                                <td>{order.id}</td>
-                                <td>{order.adminId}</td>
-                                <td>{order.deliveryTime}</td>
-                                <td>{`${order.startLocation} 到 ${order.endLocation}`}</td>
-                                <td>
-                                    <Button variant="success" onClick={() => handleAcceptOrder(order.id)}>
-                                        接受
-                                    </Button>
-                                    <Button variant="danger" onClick={() => handleRejectOrder(order.id)}>
-                                        拒绝
-                                    </Button>
-                                </td>
+                    <table {...getPendingTableProps()} style={{margin: 'auto', width: '80%'}}>
+                        <thead>
+                        {pendingHeaderGroups.map((headerGroup) => (
+                            <tr {...headerGroup.getHeaderGroupProps()}>
+                                {headerGroup.headers.map((column) => (
+                                    <th {...column.getHeaderProps(column.getSortByToggleProps())}>
+                                        {column.render('Header')}
+                                    </th>
+                                ))}
                             </tr>
                         ))}
-                    </Table>
+                        </thead>
+                        <tbody {...getPendingTableBodyProps()}>
+                        {pendingRows.map((row) => {
+                            preparePendingRow(row);
+                            return (
+                                <tr {...row.getRowProps()}>
+                                    {row.cells.map((cell) => (
+                                        <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                                    ))}
+                                </tr>
+                            );
+                        })}
+                        </tbody>
+                    </table>
                 </div>
-            ) : (
+                </TabPane>
+                <TabPane tabId="2">
                 <div>
-                    <h2>历史订单</h2>
-                    <Table striped bordered hover>
-                        {completedOrders.map((order) => (
-                            <tr key={order.id}>
-                                <td>{order.id}</td>
-                                <td>{order.adminId}</td>
-                                <td>{order.deliveryTime}</td>
-                                <td>{`${order.startLocation} 到 ${order.endLocation}`}</td>
-                                <td>已完成</td>
+                    <table {...getCompletedTableProps()} style={{margin: 'auto', width: '80%'}}>
+                        <thead>
+                        {completedHeaderGroups.map((headerGroup) => (
+                            <tr {...headerGroup.getHeaderGroupProps()}>
+                                {headerGroup.headers.map((column) => (
+                                    <th {...column.getHeaderProps(column.getSortByToggleProps())}>
+                                        {column.render('Header')}
+                                    </th>
+                                ))}
                             </tr>
                         ))}
-                    </Table>
+                        </thead>
+                        <tbody {...getCompletedTableBodyProps()}>
+                        {completedRows.map((row) => {
+                            prepareCompletedRow(row);
+                            return (
+                                <tr {...row.getRowProps()}>
+                                    {row.cells.map((cell) => (
+                                        <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                                    ))}
+                                </tr>
+                            );
+                        })}
+                        </tbody>
+                    </table>
                 </div>
-            )}
+                </TabPane>
+            </TabContent>
             <Button variant="secondary" onClick={() => navigate('/logout')}>
                 退出登录
             </Button>

@@ -21,23 +21,21 @@ function Chat() {
 
         // Call OpenAI's ChatGPT API
         try {
-            const response = await axios.post(
-                "https://api.openai.com/v1/engines/text-davinci-003/completions",
-                {
-                    prompt: `${input}\nChatGPT:`,
-                    max_tokens: 60,
-                },
-                {
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-                    },
+            const response = await axios.post("https://api.openai.com/v1/chat/completions", {
+                "model": "gpt-3.5-turbo",
+                "messages": [
+                    {"role": "user", "content": `${input}`},
+                ]
+            }, {
+                headers: {
+                    "Authorization": `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`,
+                    "Content-Type": "application/json"
                 }
-            );
+            });
 
             setMessages((messages) => [
                 ...messages,
-                { text: response.data.choices[0].text.trim(), user: "ChatGPT" },
+                { text: response.data['choices'][0]['message']['content'], user: "ChatGPT" },
             ]);
         } catch (error) {
             console.error("Error calling ChatGPT:", error);
