@@ -9,17 +9,17 @@ h1 {
     color: #333;
 }
 
-.FormGroup {
+.form {
     margin-bottom: 20px;
 }
 
-.Label {
+.label {
     display: block;
     margin-bottom: 5px;
     color: #333;
 }
 
-.Input {
+.input {
     width: 100%;
     padding: 10px;
     border: 1px solid #ccc;
@@ -27,18 +27,41 @@ h1 {
     font-size: 16px;
 }
 
-.Button {
-    display: block;
-    width: 100%;
-    padding: 10px;
-    border: none;
-    border-radius: 4px;
-    background-color: #007bff;
-    color: #fff;
-    cursor: pointer;
-    margin-top: 10px;
+.centered-content h1 {
+    color: #ff7300;
+    font-size: 2.5rem;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+.centered-content h2 {
+    color: #ff7300;
 }
 
-.Button:hover {
-    background-color: #0056b3;
+.centered-content form {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    color: #000;
+}
+
+.centered-content form label {
+    color: #000;
+}
+
+.centered-content form button {
+    background-color: #ff7300;
+    color: #fff;
+    border: none;
+    margin-top: 10px;
+    width: 100%;
+    border-radius: 8px;
+    height: 40px;
+}
+
+.centered-content form button:hover {
+    background-color: #ff860d;
+}
+
+.centered-content form button:not(:first-child) {
+    margin-top: 15px;
 }

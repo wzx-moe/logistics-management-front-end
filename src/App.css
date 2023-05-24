@@ -33,10 +33,10 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 20px;
+  padding: 5vh 5vw;
   margin: 5vh 3vw;
-  height: 90vh;
   width: 94vw;
+  min-height: 90vh;
   box-sizing: border-box;
 }
 

@@ -2,20 +2,7 @@ import "./Customer.css"
 import React, {useEffect, useMemo, useState} from 'react';
 import axios from 'axios';
 import {useSortBy, useTable} from 'react-table';
-import {
-    Button,
-    Card,
-    CardBody,
-    CardTitle,
-    Form,
-    FormGroup,
-    Input,
-    Label,
-    Nav,
-    NavItem,
-    NavLink, TabContent,
-    TabPane
-} from "reactstrap";
+import {Button, Form, FormGroup, Input, Label, Nav, NavItem, NavLink, TabContent, TabPane} from "reactstrap";
 import classnames from "classnames";
 import {useNavigate, useParams} from "react-router-dom";
 
@@ -110,10 +97,13 @@ const HomePage = () => {
     return (
         <div className="centered-content left-align">
             {userInfo && (
-                <div>
+                <div className="user-info">
                     <h2>用户名：{userInfo.name}</h2>
                     <h3>使用软件的第 {new Date().getDate() - new Date(userInfo.register).getDate() + 1} 天</h3>
                     <h3>id：{userInfo.id}</h3>
+                    <Button onClick={() => navigate('/logout')}>
+                        退出登录
+                    </Button>
                 </div>
             )}
 
@@ -216,20 +206,17 @@ const HomePage = () => {
                     </table>
                 </TabPane>
                 <TabPane tabId="3">
-                    <Card>
-                        <CardBody>
-                            <CardTitle tag="h5"></CardTitle>
-                            <Form onSubmit={handleSubmit}>
-                                <FormGroup>
-                                    <Label for="senderName">寄件人真实姓名</Label>
-                                    <Input type="text" name="senderName" id="senderName"/>
-                                </FormGroup>
-                                <FormGroup>
-                                    <Label for="senderAddress">寄件人有效地址</Label>
-                                    <Input type="text" name="pickupAddress" id="senderAddress"/>
-                                </FormGroup>
-                                <FormGroup>
-                                    <Label for="senderPhone">寄件人手机号码</Label>
+                    <Form onSubmit={handleSubmit}>
+                        <FormGroup>
+                            <Label for="senderName">寄件人真实姓名</Label>
+                            <Input type="text" name="senderName" id="senderName"/>
+                        </FormGroup>
+                        <FormGroup>
+                            <Label for="senderAddress">寄件人有效地址</Label>
+                            <Input type="text" name="pickupAddress" id="senderAddress"/>
+                        </FormGroup>
+                        <FormGroup>
+                            <Label for="senderPhone">寄件人手机号码</Label>
                                     <Input type="text" name="senderPhone" id="senderPhone"/>
                                 </FormGroup>
                                 <FormGroup>
@@ -284,8 +271,6 @@ const HomePage = () => {
                                 </FormGroup>
                                 <Button type="submit">提交</Button>
                             </Form>
-                        </CardBody>
-                    </Card>
                 </TabPane>
                 <TabPane tabId="4">
                     {/*            评论*/}

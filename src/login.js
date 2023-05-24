@@ -59,27 +59,27 @@ const Login = () => {
         <div className="centered-content">
             <h1>CoCo物流管理系统</h1>
             <Form>
-                <FormGroup>
-                    <Label for="account">账号：</Label>
-                    <Input type="text" id="account" onChange={e => setUsername(e.target.value)} />
+                <FormGroup className="mb-3">
+                    <Label for="account" className="form-label">账号：</Label>
+                    <Input type="text" id="account" onChange={e => setUsername(e.target.value)} className="form-control"/>
                 </FormGroup>
-                <FormGroup>
-                    <Label for="password">密码：</Label>
-                    <Input type="password" id="password" onChange={e => setPassword(e.target.value)} />
+                <FormGroup className="mb-3">
+                    <Label for="password" className="form-label">密码：</Label>
+                    <Input type="password" id="password" onChange={e => setPassword(e.target.value)} className="form-control"/>
                 </FormGroup>
-                <FormGroup>
-                    <Label for="smsCode">短信验证码：</Label>
-                    <Input type="text" id="smsCode" onChange={e => setSmsCode(e.target.value)} />
+                <FormGroup className="mb-3">
+                    <Label for="smsCode" className="form-label">短信验证码：</Label>
+                    <Input type="text" id="smsCode" onChange={e => setSmsCode(e.target.value)} className="form-control"/>
                 </FormGroup>
-                <FormGroup>
-                    <Label for="phoneNumber">手机号：</Label>
-                    <Input type="text" id="phoneNumber" onChange={e => setPhoneNumber(e.target.value)} />
+                <FormGroup className="mb-3">
+                    <Label for="phoneNumber" className="form-label">手机号：</Label>
+                    <Input type="text" id="phoneNumber" onChange={e => setPhoneNumber(e.target.value)} className="form-control"/>
                 </FormGroup>
-                <Button onClick={() => handleLogin('customer')}>客户登入</Button>
-                <Button onClick={() => handleLogin('driver')}>司机登入</Button>
-                <Button onClick={() => handleLogin('warehouse')}>仓库管理登入</Button>
-                <Button onClick={() => handleLogin('customer-service')}>客服登入</Button>
-                <Button onClick={() => handleLogin('manager')}>经理登入</Button>
+                <Button onClick={() => handleLogin('customer')} className="btn mt-2">客户登入</Button>
+                <Button onClick={() => handleLogin('driver')} className="btn mt-2">司机登入</Button>
+                <Button onClick={() => handleLogin('warehouse')} className="btn mt-2">仓库管理登入</Button>
+                <Button onClick={() => handleLogin('customer-service')} className="btn mt-2">客服登入</Button>
+                <Button onClick={() => handleLogin('manager')} className="btn mt-2">经理登入</Button>
             </Form>
         </div>
     );

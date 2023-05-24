@@ -1,4 +1,3 @@
-import "./Driver.css"
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import axios from 'axios';
 import {useNavigate, useParams} from 'react-router-dom';
@@ -84,10 +83,10 @@ const Driver = () => {
                 accessor: 'actions',
                 Cell: ({row: {original}}) => (
                     <>
-                        <Button variant="success" onClick={() => handleAcceptOrder(original)}>
+                        <Button onClick={() => handleAcceptOrder(original)}>
                             接受
                         </Button>
-                        <Button variant="danger" onClick={() => handleRejectOrder(original)}>
+                        <Button onClick={() => handleRejectOrder(original)}>
                             拒绝
                         </Button>
                     </>
@@ -128,9 +127,14 @@ const Driver = () => {
 
     return (
         <div className="centered-content left-align">
-            <h1>司机主页面</h1>
-            <p>司机ID：{driver.id}</p>
-            <p>身份码：{driver.identityCode}</p>
+            <div className="user-info">
+                <h2>司机主页面</h2>
+                <h3>司机ID：{driver.id}</h3>
+                <h3>身份码：{driver.identityCode}</h3>
+                <Button variant="secondary" onClick={() => navigate('/logout')}>
+                    退出登录
+                </Button>
+            </div>
             <Nav tabs>
                 <NavItem>
                     <NavLink
@@ -209,9 +213,6 @@ const Driver = () => {
                 </div>
                 </TabPane>
             </TabContent>
-            <Button variant="secondary" onClick={() => navigate('/logout')}>
-                退出登录
-            </Button>
         </div>
     );
 };
