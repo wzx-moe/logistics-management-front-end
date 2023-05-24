@@ -36,7 +36,7 @@ const Login = () => {
                         navigate(`/warehouse/${username}`);
                         break;
                     case 'customer-service':
-                        navigate(`/customer-servic/${username}`);
+                        navigate(`/customer-service/${username}`);
                         break;
                     case 'manager':
                         navigate(`/manager/${username}`);
