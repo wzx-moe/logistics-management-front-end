@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import { Button, Input, Container, Row, Col } from 'reactstrap';
+import { Button, Input, Row, Col } from 'reactstrap';
+import './Chat.css';  // import your CSS file
 
 function Chat() {
     const [messages, setMessages] = useState([]);
@@ -43,28 +44,29 @@ function Chat() {
     };
 
     return (
-        <Container>
+        <div className="chat-container">
             <Row>
-                <Col sm="12" md={{ size: 6, offset: 3 }}>
-                    <div>
+                <Col>
+                    <div className="chat-content">
                         {messages.map((message, index) => (
-                            <div key={index} className={message.user}>
-                                <p>{message.text}</p>
+                            <div key={index} className={message.user === "human" ? "human-message" : "chatbot-message"}>
+                                <p className="chat-bubble">{message.text}</p>
                             </div>
                         ))}
                         <div ref={endOfMessagesRef} />
                     </div>
-                    <form onSubmit={sendMessage}>
+                    <form onSubmit={sendMessage} className="chat-input-form">
                         <Input
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                             placeholder="Type a message..."
+                            className="chat-input"
                         />
-                        <Button color="primary" type="submit">Send</Button>
+                        <Button color="primary" type="submit" className="chat-submit-button">Send</Button>
                     </form>
                 </Col>
             </Row>
-        </Container>
+        </div>
     );
 }
 

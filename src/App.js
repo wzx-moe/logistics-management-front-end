@@ -9,6 +9,7 @@ import Warehouse from "./Warehouse";
 import CustomerService from "./CustomerService";
 import Chat from "./Chat";
 import Manager from "./Manager";
+import PackageDetail from "./PackangDetail";
 
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
                 <Route path="/warehouse/:name" element={<Warehouse/>}/>
                 <Route path="/customer-service/:name" element={<CustomerService/>}/>
                 <Route path="/manager/:name" element={<Manager/>}/>
+                <Route path="/package-detail" element={<PackageDetail/>}/>
                 <Route path="/chat" element={<Chat/>}/>
                 <Route path="/logout" element={<Logout/>}/>
             </Routes>

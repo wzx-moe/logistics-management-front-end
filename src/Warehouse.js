@@ -55,10 +55,18 @@ const Warehouse = () => {
 
 
     const handleDriverSearch = (driverId) => {
-        axios.get(`${apiUrl}/user/getOne/${driverId}`)
-            .then(response => {
-                setDriverInfo(response.data);
-            });
+        try {
+            axios.get(`${apiUrl}/user/getOne/${driverId}`)
+                .then(response => {
+                    setDriverInfo(response.data);
+                })
+                .catch(error => {
+                    alert('Error fetching driver ', error);
+                });
+
+        } catch (error) {
+            alert('Error fetching data:' + error);
+        }
     }
 
     const deliveredColumns = useMemo(
@@ -126,10 +134,15 @@ const Warehouse = () => {
     };
 
     return (
-        <div>
-            <h1>仓库管理员主页</h1>
-            <p>仓库管理员ID：{warehouseManager.id}</p>
-            <p>昵称：{warehouseManager.name}</p>
+        <div className="centered-content left-align">
+            <div className="user-info">
+                <h2>仓库管理员主页</h2>
+                <h3>仓库管理员ID：{warehouseManager.id}</h3>
+                <h3>昵称：{warehouseManager.name}</h3>
+                <Button onClick={() => navigate('/logout')}>
+                    退出登录
+                </Button>
+            </div>
 
             <Nav tabs>
                 <NavItem>
@@ -239,7 +252,7 @@ const Warehouse = () => {
                                        const selectedParcel = pendingParcels.find(parcel => parcel.orderID === e.target.value);
                                        setForm({...form, parcel: selectedParcel});
                                    }}>
-                                <option value="">请选择一个快递</option>
+                                <option key="" value="">请选择一个快递</option>
                                 {pendingParcels.map(parcel => (
                                     <option key={parcel.orderID} value={parcel.orderID}>
                                         {parcel.orderID} - {parcel.pickupAddress} 到 {parcel.deliveryAddress} - {parcel.orderDate} 到 {parcel.deliveryDate}
@@ -251,9 +264,9 @@ const Warehouse = () => {
                             <Label for="driverId">司机ID</Label>
                             <Input type="select" name="driverId" id="driverId" value={form.driverId}
                                    onChange={e => setForm({...form, driverId: e.target.value})}>
-                                <option value="">请选择一个司机</option>
+                                <option key="" value="">请选择一个司机</option>
                                 {drivers.map(driver => (
-                                    <option value={driver.id}>
+                                    <option key={driver.id} value={driver.id}>
                                         {driver.id} - {driver.name} - 状态: {driver.status || '未知'}
                                     </option>
                                 ))}
@@ -276,7 +289,7 @@ const Warehouse = () => {
                     {driverInfo && (
                         <div>
                             <p>司机名称：{driverInfo.name}</p>
-                            <p>家庭住址：{driverInfo.backup}</p>
+                            <p>家庭住址：{driverInfo.address}</p>
                             <p>工作时间：{new Date().getDate() - new Date(driverInfo.register).getDate() + 1} 天</p>
                             <p>绩效评价：{driverInfo.special}</p>
                             <p>是否空闲：{driverInfo.status || '未知'}</p>
@@ -284,9 +297,6 @@ const Warehouse = () => {
                     )}
                 </TabPane>
             </TabContent>
-            <Button variant="secondary" onClick={() => navigate('/logout')}>
-                退出登录
-            </Button>
         </div>
     );
 };

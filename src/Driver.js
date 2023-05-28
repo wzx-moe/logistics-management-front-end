@@ -51,6 +51,16 @@ const Driver = () => {
     }, [apiUrl, driver, modified]);
 
     const handleAcceptOrder = useCallback((order) => {
+        order.status = "待揽件";
+        // 调用接受订单的 API
+        axios.post(`${apiUrl}/order/update/${order.orderID}`,
+            order).then(() => {
+            // 更新订单列表
+            setModified(modified + 1);
+        });
+    }, [apiUrl, modified]);
+
+    const handleSentOrder = useCallback((order) => {
         order.status = "待取件";
         // 调用接受订单的 API
         axios.post(`${apiUrl}/order/update/${order.orderID}`,
@@ -60,7 +70,7 @@ const Driver = () => {
         });
     }, [apiUrl, modified]);
 
-    const handleRejectOrder = useCallback((order) =>  {
+    const handleRejectOrder = useCallback((order) => {
         order.driverID = null;
         order.driverName = null;
         // 调用拒绝订单的 API
@@ -83,10 +93,10 @@ const Driver = () => {
                 accessor: 'actions',
                 Cell: ({row: {original}}) => (
                     <>
-                        <Button onClick={() => handleAcceptOrder(original)}>
+                        <Button style={{margin: '0px 2px'}} onClick={() => handleAcceptOrder(original)}>
                             接受
                         </Button>
-                        <Button onClick={() => handleRejectOrder(original)}>
+                        <Button style={{margin: '0px 2px'}} onClick={() => handleRejectOrder(original)}>
                             拒绝
                         </Button>
                     </>
@@ -104,8 +114,20 @@ const Driver = () => {
             {Header: '送货日期', accessor: 'deliveryDate'},
             {Header: '地址', accessor: order => `${order.pickupAddress} 到 ${order.deliveryAddress}`},
             {Header: '状态', accessor: 'status'},
+            {
+                Header: '操作',
+                accessor: 'actions',
+                Cell: ({row: {original}}) => (
+                    <>
+                        <Button onClick={() => handleSentOrder(original)}>
+                            送达
+                        </Button>
+                    </>
+                ),
+            },
+
         ],
-        []
+        [handleSentOrder]
     );
 
     const {

@@ -1,0 +1,26 @@
+
+.title {
+    text-align: center;
+    color: #333;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.order-number {
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.logistics-label {
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.logistics-info {
+    background-color: #f8f8f8;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+}

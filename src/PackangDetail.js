@@ -1,4 +1,5 @@
 import React from 'react';
+import './PackageDetail.css';
 
 function PackageDetail() {
     const orderNumber = 'SA123xxxx';
@@ -13,11 +14,11 @@ function PackageDetail() {
   `;
 
     return (
-        <div className="container">
-            <h2>物流详细信息</h2>
-            <p><strong>订单号：</strong>{orderNumber}</p>
-            <p><strong>物流信息：</strong></p>
-            <pre>{deliveryInfo}</pre>
+        <div className="centered-content">
+            <h2 className="title">物流详细信息</h2>
+            <p className="order-number"><strong>订单号：</strong>{orderNumber}</p>
+            <p className="logistics-label"><strong>物流信息：</strong></p>
+            <pre className="logistics-info">{deliveryInfo}</pre>
         </div>
     );
 }
