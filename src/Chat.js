@@ -1,15 +1,17 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, {useEffect, useRef, useState} from "react";
 import axios from "axios";
-import { Button, Input, Row, Col } from 'reactstrap';
-import './Chat.css';  // import your CSS file
+import {Button, Col, Input, Row} from 'reactstrap';
+import './Chat.css';
+import {useNavigate} from "react-router-dom"; // import your CSS file
 
 function Chat() {
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState("");
     const endOfMessagesRef = useRef(null);
+    const navigate = useNavigate();
 
     const scrollToBottom = () => {
-        endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
+        endOfMessagesRef.current?.scrollIntoView({behavior: "smooth"});
     };
 
     useEffect(scrollToBottom, [messages]);
@@ -17,7 +19,7 @@ function Chat() {
     const sendMessage = async (e) => {
         e.preventDefault();
 
-        setMessages([...messages, { text: input, user: "human" }]);
+        setMessages([...messages, {text: input, user: "human"}]);
         setInput("");
 
         // Call OpenAI's ChatGPT API
@@ -36,7 +38,7 @@ function Chat() {
 
             setMessages((messages) => [
                 ...messages,
-                { text: response.data['choices'][0]['message']['content'], user: "ChatGPT" },
+                {text: response.data['choices'][0]['message']['content'], user: "ChatGPT"},
             ]);
         } catch (error) {
             console.error("Error calling ChatGPT:", error);
@@ -53,7 +55,7 @@ function Chat() {
                                 <p className="chat-bubble">{message.text}</p>
                             </div>
                         ))}
-                        <div ref={endOfMessagesRef} />
+                        <div ref={endOfMessagesRef}/>
                     </div>
                     <form onSubmit={sendMessage} className="chat-input-form">
                         <Input
@@ -64,8 +66,12 @@ function Chat() {
                         />
                         <Button color="primary" type="submit" className="chat-submit-button">Send</Button>
                     </form>
+                    <Button style={{width: '100%', marginTop: '20px'}} onClick={() => navigate(-1)}>
+                        返回
+                    </Button>
                 </Col>
             </Row>
+
         </div>
     );
 }

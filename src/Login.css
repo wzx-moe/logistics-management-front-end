@@ -33,6 +33,7 @@ h1 {
     margin-top: 20px;
     margin-bottom: 10px;
 }
+
 .centered-content h2 {
     color: #ff7300;
 }
@@ -52,7 +53,7 @@ h1 {
     background-color: #ff7300;
     color: #fff;
     border: none;
-    margin-top: 10px;
+    margin-bottom: 10px;
     width: 100%;
     border-radius: 8px;
     height: 40px;
@@ -64,4 +65,19 @@ h1 {
 
 .centered-content form button:not(:first-child) {
     margin-top: 15px;
+}
+
+.title-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.register-button {
+    margin-left: 20px;
+}
+
+.form-width {
+    width: 100%;  /* or any other width you prefer */
+    max-width: 512px;
 }

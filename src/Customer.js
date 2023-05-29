@@ -348,15 +348,15 @@ const HomePage = () => {
                     <Form onSubmit={handleReviewSubmit}>
                         <FormGroup>
                             <Label for="toName">评论对象</Label>
-                            <Input type="text" name="toName" id="toName" required />
+                            <Input type="text" name="toName" id="toName" required/>
                         </FormGroup>
                         <FormGroup>
                             <Label for="rating">评分</Label>
-                            <Input type="number" min="1" max="5" name="rating" id="rating" required />
+                            <Input type="number" min="1" max="5" name="rating" id="rating" required/>
                         </FormGroup>
                         <FormGroup>
                             <Label for="context">评论</Label>
-                            <Input type="textarea" name="context" id="context" required />
+                            <Input type="textarea" name="context" id="context" required/>
                         </FormGroup>
                         <Button type="submit">提交评论</Button>
                     </Form>

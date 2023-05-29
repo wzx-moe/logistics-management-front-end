@@ -47,6 +47,7 @@ const Driver = () => {
                 console.error('Error fetching data:', error);
             }
         }
+
         fetchData();
     }, [apiUrl, driver, modified]);
 
@@ -177,62 +178,62 @@ const Driver = () => {
             </Nav>
             <TabContent activeTab={activeTab}>
                 <TabPane tabId="1">
-                <div>
-                    <table {...getPendingTableProps()} style={{margin: 'auto', width: '80%'}}>
-                        <thead>
-                        {pendingHeaderGroups.map((headerGroup) => (
-                            <tr {...headerGroup.getHeaderGroupProps()}>
-                                {headerGroup.headers.map((column) => (
-                                    <th {...column.getHeaderProps(column.getSortByToggleProps())}>
-                                        {column.render('Header')}
-                                    </th>
-                                ))}
-                            </tr>
-                        ))}
-                        </thead>
-                        <tbody {...getPendingTableBodyProps()}>
-                        {pendingRows.map((row) => {
-                            preparePendingRow(row);
-                            return (
-                                <tr {...row.getRowProps()}>
-                                    {row.cells.map((cell) => (
-                                        <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                    <div>
+                        <table {...getPendingTableProps()} style={{margin: 'auto', width: '80%'}}>
+                            <thead>
+                            {pendingHeaderGroups.map((headerGroup) => (
+                                <tr {...headerGroup.getHeaderGroupProps()}>
+                                    {headerGroup.headers.map((column) => (
+                                        <th {...column.getHeaderProps(column.getSortByToggleProps())}>
+                                            {column.render('Header')}
+                                        </th>
                                     ))}
                                 </tr>
-                            );
-                        })}
-                        </tbody>
-                    </table>
-                </div>
+                            ))}
+                            </thead>
+                            <tbody {...getPendingTableBodyProps()}>
+                            {pendingRows.map((row) => {
+                                preparePendingRow(row);
+                                return (
+                                    <tr {...row.getRowProps()}>
+                                        {row.cells.map((cell) => (
+                                            <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                                        ))}
+                                    </tr>
+                                );
+                            })}
+                            </tbody>
+                        </table>
+                    </div>
                 </TabPane>
                 <TabPane tabId="2">
-                <div>
-                    <table {...getCompletedTableProps()} style={{margin: 'auto', width: '80%'}}>
-                        <thead>
-                        {completedHeaderGroups.map((headerGroup) => (
-                            <tr {...headerGroup.getHeaderGroupProps()}>
-                                {headerGroup.headers.map((column) => (
-                                    <th {...column.getHeaderProps(column.getSortByToggleProps())}>
-                                        {column.render('Header')}
-                                    </th>
-                                ))}
-                            </tr>
-                        ))}
-                        </thead>
-                        <tbody {...getCompletedTableBodyProps()}>
-                        {completedRows.map((row) => {
-                            prepareCompletedRow(row);
-                            return (
-                                <tr {...row.getRowProps()}>
-                                    {row.cells.map((cell) => (
-                                        <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                    <div>
+                        <table {...getCompletedTableProps()} style={{margin: 'auto', width: '80%'}}>
+                            <thead>
+                            {completedHeaderGroups.map((headerGroup) => (
+                                <tr {...headerGroup.getHeaderGroupProps()}>
+                                    {headerGroup.headers.map((column) => (
+                                        <th {...column.getHeaderProps(column.getSortByToggleProps())}>
+                                            {column.render('Header')}
+                                        </th>
                                     ))}
                                 </tr>
-                            );
-                        })}
-                        </tbody>
-                    </table>
-                </div>
+                            ))}
+                            </thead>
+                            <tbody {...getCompletedTableBodyProps()}>
+                            {completedRows.map((row) => {
+                                prepareCompletedRow(row);
+                                return (
+                                    <tr {...row.getRowProps()}>
+                                        {row.cells.map((cell) => (
+                                            <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                                        ))}
+                                    </tr>
+                                );
+                            })}
+                            </tbody>
+                        </table>
+                    </div>
                 </TabPane>
             </TabContent>
         </div>

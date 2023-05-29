@@ -82,53 +82,53 @@ const Manager = () => {
                     <NavLink className={classnames({active: activeTab === '3'})} onClick={() => {
                         toggle('3');
                     }}>
-                                司机
-                            </NavLink>
-                        </NavItem>
-                    </Nav>
-                    <TabContent activeTab={activeTab}>
-                        <TabPane tabId="1">
-                            {warehouseData.map((item, index) => (
-                                <Card key={index}>
-                                    <CardBody>
-                                        <CardText>姓名: {item.name}</CardText>
-                                        <CardText>联系电话: {item.phone}</CardText>
-                                        <CardText>邮箱: {item.email}</CardText>
-                                        <CardText>管理范围: {item.managed_warehouse}</CardText>
-                                        <CardText>工作时长: {new Date().getDate() - new Date(item.register).getDate() + 1} 天</CardText>
-                                        <CardText>工作态度: {item.status}</CardText>
-                                    </CardBody>
-                                </Card>
-                            ))}
-                        </TabPane>
-                        <TabPane tabId="2">
-                            {supportData.map((item, index) => (
-                                <Card key={index}>
-                                    <CardBody>
-                                        <CardText>姓名: {item.name}</CardText>
-                                        <CardText>联系电话: {item.phone}</CardText>
-                                        <CardText>邮箱: {item.email}</CardText>
-                                        <CardText>客户评价: {item.special}</CardText>
-                                        <CardText>工作时长: {new Date().getDate() - new Date(item.register).getDate() + 1} 天</CardText>
-                                        <CardText>工作态度: {item.status}</CardText>
-                                    </CardBody>
-                                </Card>
-                            ))}
-                        </TabPane>
-                        <TabPane tabId="3">
-                            {driverData.map((item, index) => (
-                                <Card key={index}>
-                                    <CardBody>
-                                        <CardText>姓名: {item.name}</CardText>
-                                        <CardText>联系电话: {item.phone}</CardText>
-                                        <CardText>邮箱: {item.email}</CardText>
-                                        <CardText>工作时长: {new Date().getDate() - new Date(item.register).getDate() + 1} 天</CardText>
-                                        <CardText>工作态度: {item.status}</CardText>
-                                    </CardBody>
-                                </Card>
-                            ))}
-                        </TabPane>
-                    </TabContent>
+                        司机
+                    </NavLink>
+                </NavItem>
+            </Nav>
+            <TabContent activeTab={activeTab}>
+                <TabPane tabId="1">
+                    {warehouseData.map((item, index) => (
+                        <Card key={index}>
+                            <CardBody>
+                                <CardText>姓名: {item.name}</CardText>
+                                <CardText>联系电话: {item.phone}</CardText>
+                                <CardText>邮箱: {item.email}</CardText>
+                                <CardText>管理范围: {item.managed_warehouse}</CardText>
+                                <CardText>工作时长: {new Date().getDate() - new Date(item.register).getDate() + 1} 天</CardText>
+                                <CardText>工作态度: {item.status}</CardText>
+                            </CardBody>
+                        </Card>
+                    ))}
+                </TabPane>
+                <TabPane tabId="2">
+                    {supportData.map((item, index) => (
+                        <Card key={index}>
+                            <CardBody>
+                                <CardText>姓名: {item.name}</CardText>
+                                <CardText>联系电话: {item.phone}</CardText>
+                                <CardText>邮箱: {item.email}</CardText>
+                                <CardText>客户评价: {item.special}</CardText>
+                                <CardText>工作时长: {new Date().getDate() - new Date(item.register).getDate() + 1} 天</CardText>
+                                <CardText>工作态度: {item.status}</CardText>
+                            </CardBody>
+                        </Card>
+                    ))}
+                </TabPane>
+                <TabPane tabId="3">
+                    {driverData.map((item, index) => (
+                        <Card key={index}>
+                            <CardBody>
+                                <CardText>姓名: {item.name}</CardText>
+                                <CardText>联系电话: {item.phone}</CardText>
+                                <CardText>邮箱: {item.email}</CardText>
+                                <CardText>工作时长: {new Date().getDate() - new Date(item.register).getDate() + 1} 天</CardText>
+                                <CardText>工作态度: {item.status}</CardText>
+                            </CardBody>
+                        </Card>
+                    ))}
+                </TabPane>
+            </TabContent>
         </div>
     );
 };

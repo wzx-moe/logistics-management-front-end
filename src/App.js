@@ -10,6 +10,7 @@ import CustomerService from "./CustomerService";
 import Chat from "./Chat";
 import Manager from "./Manager";
 import PackageDetail from "./PackangDetail";
+import Register from "./Register";
 
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
         <BrowserRouter>
             <Routes>
                 <Route path="/" element={<Login/>}/>
+                <Route path="/register" element={<Register/>}/>
                 <Route path="/customer/:name" element={<Customer/>}/>
                 <Route path="/driver/:name" element={<Driver/>}/>
                 <Route path="/warehouse/:name" element={<Warehouse/>}/>

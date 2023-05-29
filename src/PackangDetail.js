@@ -1,7 +1,10 @@
 import React from 'react';
 import './PackageDetail.css';
+import {Button} from "reactstrap";
+import {useNavigate} from "react-router-dom";
 
 function PackageDetail() {
+    const navigate = useNavigate();
     const orderNumber = 'SA123xxxx';
     const deliveryInfo = `
     【已揽件】11-20 15:16
@@ -19,6 +22,9 @@ function PackageDetail() {
             <p className="order-number"><strong>订单号：</strong>{orderNumber}</p>
             <p className="logistics-label"><strong>物流信息：</strong></p>
             <pre className="logistics-info">{deliveryInfo}</pre>
+            <Button onClick={() => navigate(-1)}>
+                返回
+            </Button>
         </div>
     );
 }

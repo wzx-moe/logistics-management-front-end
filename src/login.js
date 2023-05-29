@@ -1,8 +1,8 @@
 import "./Login.css"
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import axios from 'axios';
-import { Button, Form, FormGroup, Label, Input } from 'reactstrap';
-import { useNavigate } from 'react-router-dom';
+import {Button, Col, Form, FormGroup, Input, Label, Row} from 'reactstrap';
+import {useNavigate} from 'react-router-dom';
 
 const Login = () => {
     const [username, setUsername] = useState('');
@@ -25,7 +25,7 @@ const Login = () => {
             if (response.status === 200) {
                 localStorage.setItem('token', response.data)
                 // 登录成功，根据角色跳转到对应主页面
-                switch(role) {
+                switch (role) {
                     case 'customer':
                         navigate(`/customer/${username}`);
                         break;
@@ -57,23 +57,38 @@ const Login = () => {
 
     return (
         <div className="centered-content">
-            <h1>CoCo物流管理系统</h1>
+            <div className="title-container">
+                <h1>CoCo物流管理系统</h1>
+                <Button onClick={() => navigate('/register')} className="btn mt-2 register-button">注册</Button>
+            </div>
             <Form>
                 <FormGroup className="mb-3">
                     <Label for="account" className="form-label">账号：</Label>
-                    <Input type="text" id="account" onChange={e => setUsername(e.target.value)} className="form-control"/>
+                    <Input type="text" id="account" onChange={e => setUsername(e.target.value)}
+                           className="form-control"/>
                 </FormGroup>
                 <FormGroup className="mb-3">
                     <Label for="password" className="form-label">密码：</Label>
-                    <Input type="password" id="password" onChange={e => setPassword(e.target.value)} className="form-control"/>
-                </FormGroup>
-                <FormGroup className="mb-3">
-                    <Label for="smsCode" className="form-label">短信验证码：</Label>
-                    <Input type="text" id="smsCode" onChange={e => setSmsCode(e.target.value)} className="form-control"/>
+                    <Input type="password" id="password" onChange={e => setPassword(e.target.value)}
+                           className="form-control"/>
                 </FormGroup>
                 <FormGroup className="mb-3">
                     <Label for="phoneNumber" className="form-label">手机号：</Label>
-                    <Input type="text" id="phoneNumber" onChange={e => setPhoneNumber(e.target.value)} className="form-control"/>
+                    <Row>
+                        <Col>
+                            <Input type="text" id="phoneNumber" onChange={e => setPhoneNumber(e.target.value)}
+                                   className="form-control"/>
+                        </Col>
+                        <Col>
+                            <Button onClick={(event) => event.preventDefault()}
+                                    className="form-inline">获取验证码</Button>
+                        </Col>
+                    </Row>
+                </FormGroup>
+                <FormGroup className="mb-3">
+                    <Label for="smsCode" className="form-label">短信验证码：</Label>
+                    <Input type="text" id="smsCode" onChange={e => setSmsCode(e.target.value)}
+                           className="form-control"/>
                 </FormGroup>
                 <Button onClick={() => handleLogin('customer')} className="btn mt-2">客户登入</Button>
                 <Button onClick={() => handleLogin('driver')} className="btn mt-2">司机登入</Button>

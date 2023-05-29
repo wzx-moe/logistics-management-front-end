@@ -111,7 +111,7 @@ const Warehouse = () => {
         setSubmitting(true);
 
         // 构建更新后的parcel对象
-        const updatedParcel = { ...form.parcel, driverID: form.driverId };
+        const updatedParcel = {...form.parcel, driverID: form.driverId};
 
         try {
             // 提交更新后的parcel对象
